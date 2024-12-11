@@ -337,7 +337,7 @@
 
         document.getElementById('loading').style.display = 'block';
         setTimeout(() => {
-            let result = (period % 2 === 0) ? "BIG" : "SMALL";
+            let result = (period % 2 === 0) ? "Big / Red" : "Small / Green";
             resultElement.textContent = result;
             resultElement.style.color = "#00796b"; // Success color
             document.getElementById('loading').style.display = 'none';
