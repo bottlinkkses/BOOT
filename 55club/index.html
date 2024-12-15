@@ -1,11 +1,65 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>55club Hack</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
+    /* Dialog Box */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .dialog-box {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            animation: bounce 1s ease-in-out;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 350px; /* Adjust width to fit the screen */
+        }
+
+        .dialog-box .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ff6f61;
+            cursor: pointer;
+        }
+
+        .dialog-box p {
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .dialog-box register-btn {
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .dialog-box register-btn:hover {
+            background: linear-gradient(45deg, #66bb6a, #388e3c);
+            transform: scale(1.1) rotate(2deg);
+        }
         /* Basic Reset */
         * {
             margin: 0;
@@ -221,7 +275,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            display: flex;
+            display: none; /* Initially hidden */
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -265,16 +319,39 @@
             background: linear-gradient(45deg, #66bb6a, #388e3c);
             transform: scale(1.1) rotate(2deg);
         }
+        
+        .accuracy-text {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6f61;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: 2px solid #ff6f61;
+            padding: 5px 10px;
+            border-radius: 15px;
+            background: white;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .accuracy-text:hover {
+            background: #ffe5e0;
+            transform: scale(1.05);
+        }
+        
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
+        <div class="accuracy-text" onclick="showAccuracyDialog()">Increase Accuracy?</div>
         <span></span>
         <span class="online-users">● Online Users: <span id="online-users"></span></span>
     </div>
     <div class="logo">
-       <img src="55club.png" alt="55club Logo" style="pointer-events: none; user-drag: none; -webkit-user-drag: none;" draggable="false" />
+       <img src="55club.png" alt="fir Logo" style="pointer-events: none; user-drag: none; -webkit-user-drag: none;" draggable="false" />
     </div>
     <div class="title">55club (Hack)</div>
         <div class="box">
@@ -308,12 +385,37 @@
     </div>
 </div>
 
+<div class="dialog-overlay" id="accuracy-dialog" onclick="hideAccuracyDialog()">
+    <div class="dialog-box" onclick="event.stopPropagation()">
+        <button class="close-btn" onclick="hideAccuracyDialog()">×</button>
+        <p>Create a new 55club account by the official hack link to increase accuracy. Click on the Register button below. <br></br>ᴬᶠᵗᵉʳ ᶜʳᵉᵃᵗⁱⁿᵍ ᵃ ⁿᵉʷ ᵃᶜᶜᵒᵘⁿᵗ ᵗʰᵉ ᵃᶜᶜᵘʳᵃᶜʸ ʷⁱˡˡ ⁱⁿᶜʳᵉᵃˢᵉ ᵃᵘᵗᵒᵐᵃᵗⁱᶜᵃˡˡʸ</p>
+        <button class="button register-btn" onclick="window.open('https://colorsignup.github.io/ES1/55club', '_blank')">Register</button>
+    </div>
+</div>
+<!-- Dialog Box -->
+<div class="dialog-overlay" id="dialog-overlay" onclick="closeDialog(event)">
+    <div class="dialog-box" onclick="event.stopPropagation()">
+        <button class="close-btn" onclick="closeDialog()">×</button>
+        <p>Please create a new 55club account by clicking on the "Register" button. Using this mod with an old account may result in loss</p>
+        <button class="button register-btn" onclick="window.open('https://colorsignup.github.io/ES1/55club', '_blank')">Register</button>
+    </div>
+</div>
+
+
 <!-- Audio for Button Click -->
 <audio id="click-sound" src="sound.mp3" preload="auto"></audio>
 
 <script>
-    // Show the dialog on page load
+let storedResults = {}; // To store results for each period
+// Show the dialog on page load
     document.getElementById('dialog-overlay').style.display = 'flex';
+
+    // Close the dialog
+    function closeDialog(event) {
+        document.getElementById('dialog-overlay').style.display = 'none';
+    }
+    // Show the dialog on page load
+    // document.getElementById('dialog-overlay').style.display = 'flex';  // This line is removed
 
     // Close the dialog
     function closeDialog(event) {
@@ -327,9 +429,10 @@
 
 
     function startProcess() {
-        let period = document.getElementById('period-input').value;
+        let periodInput = document.getElementById('period-input').value.trim();
         let resultElement = document.getElementById('result');
-        if (!period) {
+
+        if (!periodInput) {
             resultElement.textContent = "Error ❌";
             resultElement.style.color = "#d32f2f"; // Error color
             return;
@@ -337,11 +440,31 @@
 
         document.getElementById('loading').style.display = 'block';
         setTimeout(() => {
-            let result = (period % 2 === 0) ? "Big / Red" : "Small / Green";
-            resultElement.textContent = result;
+            // Check if a result is already stored for this period
+            if (!storedResults[periodInput]) {
+                // Generate a random number between 0 and 9
+                let number = Math.floor(Math.random() * 10);
+
+                // Determine size and color based on the generated number
+                let size = (number >= 0 && number <= 4) ? "SMALL" : "BIG";
+                let color = (number % 2 === 0) ? "🔴" : "🟢";
+
+                // Store the result for this period
+                storedResults[periodInput] = `${number} | ${size} | ${color}`;
+            }
+
+            // Display the stored result
+            resultElement.textContent = `${storedResults[periodInput]}`;
             resultElement.style.color = "#00796b"; // Success color
             document.getElementById('loading').style.display = 'none';
         }, 750);
+    }
+    function showAccuracyDialog() {
+        document.getElementById('accuracy-dialog').style.display = 'flex';
+    }
+
+    function hideAccuracyDialog() {
+        document.getElementById('accuracy-dialog').style.display = 'none';
     }
 
     // Play the sound when the button is clicked
